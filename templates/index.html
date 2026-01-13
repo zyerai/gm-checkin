@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="calendar-page">
+    <!-- 统计卡片 -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-content">
+                <div class="stat-label">连续打卡</div>
+                <div class="stat-value">{{ streak }} 天</div>
+            </div>
+        </div>
+
+        <div class="stat-item">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <div class="stat-label">累计打卡</div>
+                <div class="stat-value">{{ total_checkins }} 天</div>
+            </div>
+        </div>
+
+        <div class="stat-item">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+                <div class="stat-label">今天</div>
+                <div class="stat-value">{{ today.strftime('%m-%d') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 今天打卡按钮 -->
+    <div class="today-checkin">
+        {% if today.isoformat() in checkins %}
+        <div class="checked-in">
+            <h2>✅ 今天已打卡</h2>
+            <p>Keep Grinding! 💪</p>
+            <button onclick="showCheckinForm()" class="btn-secondary">更新打卡</button>
+        </div>
+        {% else %}
+        <div class="not-checked-in">
+            <h2>今天还没有打卡</h2>
+            <p>GM! Let's go! 🚀</p>
+            <button onclick="showCheckinForm()" class="btn-primary">立即打卡</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 打卡表单（默认隐藏） -->
+    <div id="checkinForm" class="checkin-form" style="display: none;">
+        <h3>今天打卡</h3>
+        <form method="POST" action="{{ url_for('checkin') }}">
+            <div class="form-group">
+                <label>日期</label>
+                <input type="date" name="checkin_date" value="{{ today.isoformat() }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>今日心情</label>
+                <div class="mood-selector">
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="gm" checked>
+                        <span>🌅 GM</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="bullish">
+                        <span>🚀 Bullish</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="focused">
+                        <span>💪 Focused</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="learning">
+                        <span>📚 Learning</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="chill">
+                        <span>😌 Chill</span>
+                    </label>
+                    <label class="mood-option">
+                        <input type="radio" name="mood" value="grinding">
+                        <span>⚡ Grinding</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>今日备注 (可选)</label>
+                <textarea name="notes" rows="3" placeholder="今天计划做什么？或者记录一些想法..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">打卡！</button>
+                <button type="button" onclick="generateGM()" class="btn-secondary">生成GM文案</button>
+                <button type="button" onclick="hideCheckinForm()" class="btn-cancel">取消</button>
+            </div>
+        </form>
+
+        <div id="gmResult" class="gm-result" style="display: none;">
+            <h4>📝 你的GM文案：</h4>
+            <p id="gmText"></p>
+            <button onclick="copyGM()" class="btn-small">复制</button>
+        </div>
+    </div>
+
+    <!-- 日历 -->
+    <div class="calendar-section">
+        <div class="calendar-header">
+            <a href="{{ url_for('index', year=prev_year, month=prev_month) }}" class="nav-btn">&lt; 上个月</a>
+            <h2>{{ month_name }} {{ year }}</h2>
+            <a href="{{ url_for('index', year=next_year, month=next_month) }}" class="nav-btn">下个月 &gt;</a>
+        </div>
+
+        <div class="calendar-grid">
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            <div class="calendar-day-header">Sun</div>
+
+            {% for week in month_days %}
+            {% for day in week %}
+            {% if day == 0 %}
+            <div class="calendar-day empty"></div>
+            {% else %}
+            {% set date_str = '%d-%02d-%02d'|format(year, month, day) %}
+            <div class="calendar-day {% if date_str in checkins %}checked{% endif %} {% if date_str == today.isoformat() %}today{% endif %}">
+                <div class="day-number">{{ day }}</div>
+                {% if date_str in checkins %}
+                <div class="checkin-mark">{{ checkins[date_str]['mood']|mood_emoji }}</div>
+                {% if checkins[date_str]['notes'] %}
+                <div class="day-notes" title="{{ checkins[date_str]['notes'] }}">📝</div>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function showCheckinForm() {
+    document.getElementById('checkinForm').style.display = 'block';
+    document.getElementById('checkinForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideCheckinForm() {
+    document.getElementById('checkinForm').style.display = 'none';
+}
+
+function generateGM() {
+    const mood = document.querySelector('input[name="mood"]:checked').value;
+    fetch(`/generate_gm?mood=${mood}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('gmText').textContent = data.gm_text;
+            document.getElementById('gmResult').style.display = 'block';
+        });
+}
+
+function copyGM() {
+    const text = document.getElementById('gmText').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('已复制到剪贴板！');
+    });
+}
+</script>
+{% endblock %}

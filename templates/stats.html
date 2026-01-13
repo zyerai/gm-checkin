@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}统计 - GM打卡日志{% endblock %}
+
+{% block content %}
+<div class="stats-page">
+    <h1>📊 打卡统计</h1>
+
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <div class="stat-label">总打卡天数</div>
+                <div class="stat-value">{{ total_checkins }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card orange">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-content">
+                <div class="stat-label">当前连续</div>
+                <div class="stat-value">{{ streak }} 天</div>
+            </div>
+        </div>
+
+        <div class="stat-card purple">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-content">
+                <div class="stat-label">最长连续</div>
+                <div class="stat-value">{{ max_streak }} 天</div>
+            </div>
+        </div>
+
+        <div class="stat-card green">
+            <div class="stat-icon">📈</div>
+            <div class="stat-content">
+                <div class="stat-label">近30天打卡率</div>
+                <div class="stat-value">{{ "%.1f"|format(checkin_rate) }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2>本月打卡</h2>
+        <div class="month-stat">
+            <span class="month-stat-value">{{ this_month }}</span>
+            <span class="month-stat-label">天</span>
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h2>心情分布</h2>
+        {% if by_mood|length == 0 %}
+        <p class="empty-text">还没有打卡记录</p>
+        {% else %}
+        <div class="mood-stats">
+            {% for mood in by_mood %}
+            <div class="mood-stat-item">
+                <span class="mood-emoji">{{ mood.mood|mood_emoji }}</span>
+                <span class="mood-name">{{ mood.mood|capitalize }}</span>
+                <span class="mood-count">{{ mood.count }} 次</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="stats-section">
+        <h2>坚持就是胜利 💪</h2>
+        <div class="motivation">
+            {% if streak >= 30 %}
+            <p>🎉 太棒了！你已经连续打卡 {{ streak }} 天了！</p>
+            {% elif streak >= 21 %}
+            <p>🔥 习惯已经养成！继续坚持！</p>
+            {% elif streak >= 7 %}
+            <p>💪 很好的开始！保持这个节奏！</p>
+            {% elif streak >= 3 %}
+            <p>✅ 好的开始！继续加油！</p>
+            {% else %}
+            <p>🌅 每一天都是新的开始，GM！</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}历史记录 - GM打卡日志{% endblock %}
+
+{% block content %}
+<div class="history-page">
+    <h1>📝 历史记录</h1>
+
+    <div class="history-list">
+        {% for record in history %}
+        <div class="history-item">
+            <div class="history-header">
+                <span class="history-date">{{ record.checkin_date }}</span>
+                <span class="history-mood">{{ record.mood|mood_emoji }}</span>
+            </div>
+            {% if record.notes %}
+            <div class="history-notes">{{ record.notes }}</div>
+            {% endif %}
+            <form method="POST" action="{{ url_for('delete_checkin', checkin_date=record.checkin_date) }}"
+                  onsubmit="return confirm('确定要删除这条打卡记录吗？')"
+                  style="display: inline;">
+                <button type="submit" class="btn-delete">删除</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
