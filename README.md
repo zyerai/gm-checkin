@@ -1,3 +1,5 @@
+![Made by ZYER](https://img.shields.io/badge/Made%20by-ZYER-blue?style=for-the-badge&logo=github)
+
 # 🌅 GM打卡日志
 
 一个简单的每日打卡工具，帮助你养成每天说"GM"的习惯！追踪你的连续打卡天数，生成GM文案，记录每日心情。
@@ -168,4 +170,15 @@ GM! 2025-01-13 📚 今天也要加油！
 
 ---
 
-**每天GM，养成习惯！WAGMI 💪**
+## Author
+
+**ZYER** - AI撸毛新手 | 预测市场日记 | Vibe coding | 不擅长但能做好 | 执行力 | 定投 | 跑步 | 读书 | 学英语 | WAGMI | GM
+
+- GitHub: [zyerai](https://github.com/zyerai)
+- Email: zyerai@gmail.com
+
+---
+
+*WAGMI | GM | 定投继续 | 学习继续*
+
+Made with ❤️ by ZYER
