@@ -175,7 +175,8 @@ GM! 2025-01-13 📚 今天也要加油！
 **ZYER** - AI撸毛新手 | 预测市场日记 | Vibe coding | 不擅长但能做好 | 执行力 | 定投 | 跑步 | 读书 | 学英语 | WAGMI | GM
 
 - GitHub: [zyerai](https://github.com/zyerai)
-- Email: zyerai@gmail.com
+- Email: zyyyy123321@gmail.com
+- X/Twitter: [@ZYER55](https://x.com/ZYER55)
 
 ---
 
